@@ -85,7 +85,6 @@ app.post("/ordenProducida", function (req, res) {
             res.send({msg:"Producion confirmada"});
         }
     })
-    // res.send(req.params._id)
 });
 
 app.get("/listapedidosDespachados", function (req, res) {
