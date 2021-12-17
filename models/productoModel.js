@@ -8,6 +8,6 @@ const productoSchema = new Schema({
         type: "String",
         required:true
     }
-})
+});
 const productoModel = model("productos",productoSchema);
 exports.productoModel = productoModel;

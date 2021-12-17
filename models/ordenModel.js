@@ -28,6 +28,6 @@ const ordenSchema = new Schema({
         type: "String",
         required:true
     }
-})
+});
 const ordenModel = model("ordenes",ordenSchema);
 exports.ordenModel = ordenModel;

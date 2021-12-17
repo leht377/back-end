@@ -19,7 +19,12 @@ const materiaSchema = new Schema({
     precio:{
         type: "number",
         required:true
+    },
+    cantidadVendida:{
+        type: "number",
+        required:true
     }
+
 
 });
 
