@@ -71,6 +71,15 @@ app.get("/listarMaterias", function (req, res) {
 });
 
 
+app.post("/editarMateriaPrima", function (req, res) {
+    materiaModel.updateOne({ nombre: req.body.nombre }, { $set:{nombre:req.body.nombre,descripcion:req.body.descripcion,unidad:req.body.unidad,cantidad:req.body.cantidad,precio:req.body.precio} }, function (err, re) {
+        if (err) {
+            res.send({ msg: "No se pudo actualizar la materia" });
+        } else {
+            res.send({ msg: "Actualizacion Exitosa" });
+        }
+    })
+});
 app.get("/materiaMasVendida",function (req, res) {
     materiaModel.find({},function(error, lista) {
         if (lista != null) {
