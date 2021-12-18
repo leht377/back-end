@@ -22,9 +22,32 @@ mongoose.connect("mongodb://localhost:27017/Miche")
     .catch(err => console.log(err));
 
 app.post("/crearUsuario", function (req, res) {
-    console.log(req.body);
-})
+    const user = new usuarioModel(req.body)
+    user.save(function (err) {
+        if (err) {
+            res.send({ msg: "usuario no registrado" })
+        } else {
+            res.send({ msg: "usuario registrado" })
+        }
 
+    })
+})
+app.post("/validarUsuario", async function (req, res) {
+    if (req.body.user != "" && req.body.pass != "") {
+        await usuarioModel.find({ usuario: req.body.user }, function (err, user) {
+            if (user[0]["usuario"] === req.body.user && user[0]["contrasena"] === req.body.pass) {
+                console.log("bien")
+                res.send({ validacion: true });
+            } else {
+                console.log("mal")
+                res.send({ validacion: false });
+
+            }
+        }).clone().catch(function (err) { console.log(err) })
+    } else {
+        res.send({ validacion: true });
+    }
+})
 app.post("/agregarMateriaPrima", function (req, res) {
     const materi = new materiaModel(req.body);
     materi.save(function (err) {
@@ -43,7 +66,19 @@ app.get("/listarMaterias", function (req, res) {
         } else {
             res.send(lista);
         }
-    }).sort({ nombre: 1 })
+    }).sort({ nombre: 1 }).clone().catch(function (err) { console.log(err) })
+
+});
+
+
+app.get("/materiaMasVendida",function (req, res) {
+    materiaModel.find({},function(error, lista) {
+        if (lista != null) {
+            res.send(lista[0]);
+        } else {
+            res.send(lista[0]);
+        }
+    }).sort({cantidadVendida:-1}).limit(1)
 
 });
 
@@ -143,16 +178,16 @@ app.post("/descontarInventario", async function (req, res) {
     var valorDB = 0;
     var valorPedido = 0;
     var valorDescuento = 0;
-    var valorCantidadVendida=0;
+    var valorCantidadVendida = 0;
     var valorNuevoCantidadVendida = 0;
-    await materiaModel.find({ nombre:req.body.nombre }, function (err, lis) {
-        if(!err){
-             valorDB = lis[0]["cantidad"];
-             valorCantidadVendida = lis[0]["cantidadVendida"]
-             valorPedido = req.body.cantidad;
-             valorNuevoCantidadVendida =  valorCantidadVendida + valorPedido;
-             valorDescuento = valorDB -valorPedido;
-             materiaModel.updateOne({nombre:req.body.nombre }, { $set: { cantidad:valorDescuento,cantidadVendida:valorNuevoCantidadVendida} }, function (err, re) {
+    await materiaModel.find({ nombre: req.body.nombre }, function (err, lis) {
+        if (!err) {
+            valorDB = lis[0]["cantidad"];
+            valorCantidadVendida = lis[0]["cantidadVendida"]
+            valorPedido = req.body.cantidad;
+            valorNuevoCantidadVendida = valorCantidadVendida + valorPedido;
+            valorDescuento = valorDB - valorPedido;
+            materiaModel.updateOne({ nombre: req.body.nombre }, { $set: { cantidad: valorDescuento, cantidadVendida: valorNuevoCantidadVendida } }, function (err, re) {
                 if (err) {
                     // res.send({ msg: "No se puedo despachar la orden" });
                     console.log(err)
@@ -160,17 +195,17 @@ app.post("/descontarInventario", async function (req, res) {
                     res.send("ok");
                     // res.send({ msg: "Orden despachada" });
                 }
-            }).clone().catch(function(err){ console.log(err)})
+            }).clone().catch(function (err) { console.log(err) })
         }
-    }).clone().catch(function(err){ console.log(err)})
+    }).clone().catch(function (err) { console.log(err) })
 })
 
 app.post("/GuardarOrden", async function (req, res) {
     const orden = new ordenModel(req.body);
-    await orden.save(function(err){
-        if(err){
+    await orden.save(function (err) {
+        if (err) {
             res.send(err)
-        }else{
+        } else {
             res.send("ok")
         }
     })
