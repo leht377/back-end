@@ -33,21 +33,23 @@ app.post("/crearUsuario", function (req, res) {
     })
 })
 app.post("/validarUsuario", async function (req, res) {
-    if (req.body.user != "" && req.body.pass != "") {
-        await usuarioModel.find({ usuario: req.body.user }, function (err, user) {
-            if (user[0]["usuario"] === req.body.user && user[0]["contrasena"] === req.body.pass) {
-                console.log("bien")
-                res.send({ validacion: true });
-            } else {
-                console.log("mal")
-                res.send({ validacion: false });
-
+    const userlogin =  req.body.usuario;
+    const passwordlogin = req.body.contrasena;
+    await usuarioModel.findOne({ "usuario": userlogin }, function (err, myUser) {
+        if (!err) {
+            if(myUser != null){
+                if (myUser["usuario"] === userlogin && myUser["contrasena"] === passwordlogin) {
+                    res.send({validacion:true});
+                }else{
+                    res.send({validacion:false})
+                }
+            }else{
+                res.send({validacion:false})
             }
-        }).clone().catch(function (err) { console.log(err) })
-    } else {
-        res.send({ validacion: true });
-    }
+        }
+    }).clone().catch(function (err) { console.log(err) })
 })
+
 app.post("/agregarMateriaPrima", function (req, res) {
     const materi = new materiaModel(req.body);
     materi.save(function (err) {
@@ -72,7 +74,7 @@ app.get("/listarMaterias", function (req, res) {
 
 
 app.post("/editarMateriaPrima", function (req, res) {
-    materiaModel.updateOne({ nombre: req.body.nombre }, { $set:{nombre:req.body.nombre,descripcion:req.body.descripcion,unidad:req.body.unidad,cantidad:req.body.cantidad,precio:req.body.precio} }, function (err, re) {
+    materiaModel.updateOne({ nombre: req.body.nombre }, { $set: { nombre: req.body.nombre, descripcion: req.body.descripcion, unidad: req.body.unidad, cantidad: req.body.cantidad, precio: req.body.precio } }, function (err, re) {
         if (err) {
             res.send({ msg: "No se pudo actualizar la materia" });
         } else {
@@ -80,14 +82,14 @@ app.post("/editarMateriaPrima", function (req, res) {
         }
     })
 });
-app.get("/materiaMasVendida",function (req, res) {
-    materiaModel.find({},function(error, lista) {
+app.get("/materiaMasVendida", function (req, res) {
+    materiaModel.find({}, function (error, lista) {
         if (lista != null) {
             res.send(lista[0]);
         } else {
             res.send(lista[0]);
         }
-    }).sort({cantidadVendida:-1}).limit(1)
+    }).sort({ cantidadVendida: -1 }).limit(1)
 
 });
 
