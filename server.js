@@ -49,7 +49,18 @@ app.post("/validarUsuario", async function (req, res) {
         }
     }).clone().catch(function (err) { console.log(err) })
 })
+app.get("/listarUsuarios",function(req,res){
+    usuarioModel.find({},function(err,listUser){
+        if(!err){
 
+            if(listUser!=null){
+                res.send(listUser);
+            }else{
+                res.send({msg:"No hay usuarios"})
+            }
+        }
+    }).clone().catch(function (err) { console.log(err) })
+});
 app.post("/agregarMateriaPrima", function (req, res) {
     const materi = new materiaModel(req.body);
     materi.save(function (err) {
